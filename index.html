@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI_Response</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 flex flex-col justify-center">
+
+    <div class="bg-white rounded-2xl shadow-xl w-full p-5 flex justify-center h-xl">
+        <h2 class="text-2xl font-bold text-gray-800">Talk to Gemini AI</h2>
+    </div>
+    <div class="mt-16">
+        <form onsubmit="askAI(event)">
+            <label for="question">Question:</label>
+            <input
+                type="text"
+                id="question"
+                placeholder="Ask Anything"
+                class="p-3 rounded-2xl w-3/4"
+            />
+            <button
+                onclick="askAI(event)"
+                class="bg-blue-500 text-white font-semibold px-6 py-2 rounded-xl hover:bg-blue-600 transition"
+            >Send</button>
+        </form>
+
+        <div class="mt-16 p-5 bg-green-200 flex justify-center">
+            <textarea 
+                id="response"
+                class="px-3 py-2 text-lg"
+                rows="8"
+                cols="60"
+                placeholder="Your response will appear here!!"
+            ></textarea>
+        </div>
+    </div>
+    <div class="flex justify-center w-full gap-x-16 mt-12">
+        <button
+                onclick="clear_question(event)"
+                class="bg-blue-500 text-white font-semibold px-6 py-2 rounded-xl hover:bg-blue-600 transition"
+            >Clear Question</button>
+            <button
+                onclick="clear_response(event)"
+                class="bg-blue-500 text-white font-semibold px-6 py-2 rounded-xl hover:bg-blue-600 transition"
+            >Clear Response</button>
+    </div>
+
+    <script>
+        const askAI = async (event)=>
+        {
+            event.preventDefault();
+            const input=document.getElementById("question")
+            const msg=input.value
+
+            if(!msg.trim())
+            {
+                alert("Please enter your message!!")
+                return
+            }
+
+            const textarea = document.getElementById("response")
+            textarea.value="Thinking...🤔"
+
+            try {
+                const res= await fetch(`http://localhost:8000/talk_ai?req=${encodeURIComponent(msg)}`)
+                console.log(res)
+                const response_from_backend = await res.json();
+                console.log(response_from_backend)
+                textarea.value=response_from_backend.response
+                
+            } catch (error) {
+                textarea.value="Failed to get response try again"
+                console.log(error)
+            }
+        }
+
+        const clear_question=async (event)=>
+        {
+            event.preventDefault();
+            const input=document.getElementById("question")
+            input.value=""
+        }
+        const clear_response=async (event)=>
+        {
+            event.preventDefault();
+            const textarea=document.getElementById("response")
+            textarea.value=""
+        }
+    </script>
+</body>
+
+
+
+</html>
